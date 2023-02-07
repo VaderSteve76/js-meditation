@@ -9,6 +9,7 @@ const app = () => {
 
   //time
   const timeDisplay = document.querySelector(".time-display");
+  const timeSelect = document.querySelectorAll(".time-select button");
 
   //get length of outline
   const outlineLength = outline.getTotalLength();
@@ -18,6 +19,15 @@ const app = () => {
   let fakeDuration = 600;
   outline.style.strokeDasharray = outlineLength;
   outline.style.strokeDashoffset = outlineLength;
+
+  //play video
+  sounds.forEach(sound => {
+    sound.addEventListener("click", function() {
+      song.src = this.getAttribute("data-sound");
+      video.src = this.getAttribute("data-video");
+      checkPlaying(song);
+    });
+  });
 
   //play sound
   play.addEventListener("click", () => {
@@ -42,10 +52,24 @@ const app = () => {
     let elapsed = fakeDuration - currentTime;
     let seconds = Math.floor(elapsed % 60);
     let minutes = Math.floor(elapsed / 60);
+    timeDisplay.textContent = `${minutes}:${seconds}`;
     let progress = outlineLength - (currentTime / fakeDuration) * outlineLength;
     outline.style.strokeDashoffset = progress;
+
+    if (currentTime >= fakeDuration) {
+      song.pause();
+      song.currentTime = 0;
+      play.src = "./svg/play.svg";
+      video.pause();
+    }
   };
 
+  timeSelect.forEach(option => {
+    option.addEventListener("click", function() {
+      fakeDuration = this.getAttribute("data-time");
+      timeDisplay.textContent = `${Math.floor(fakeDuration / 60)}:${Math.floor(fakeDuration % 60)}`;
+    });
+  });
 
 };
 
